@@ -37,7 +37,9 @@ C_SRCS := \
 	mm/vmm.c \
 	mm/page_cache.c \
 	sched/rbtree.c \
-	sched/scheduler.c
+	sched/scheduler.c \
+	fs/ata.c \
+	fs/ext2.c
 
 OBJS := $(ASM_SRCS:%.s=$(BUILD_DIR)/%.o) $(C_SRCS:%.c=$(BUILD_DIR)/%.o)
 DEPS := $(OBJS:.o=.d)
