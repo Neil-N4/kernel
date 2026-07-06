@@ -4,6 +4,7 @@ CC         := $(TARGET)-gcc
 LD         := $(TARGET)-gcc
 AS         := nasm
 QEMU       := qemu-system-i386
+HOST_CC    := clang
 
 BUILD_DIR  := build
 ISO_DIR    := $(BUILD_DIR)/isodir
@@ -44,13 +45,18 @@ C_SRCS := \
 OBJS := $(ASM_SRCS:%.s=$(BUILD_DIR)/%.o) $(C_SRCS:%.c=$(BUILD_DIR)/%.o)
 DEPS := $(OBJS:.o=.d)
 
-.PHONY: all clean run iso check-toolchain
+.PHONY: all clean run iso check-toolchain syntax-check
 
 all: $(KERNEL_ELF)
 
 check-toolchain:
 	@command -v $(CC) >/dev/null || { echo "$(CC) not found"; exit 1; }
 	@command -v $(AS) >/dev/null || { echo "$(AS) not found"; exit 1; }
+
+syntax-check:
+	$(HOST_CC) -target i386-unknown-none-elf -std=gnu11 -ffreestanding \
+		-fno-builtin -fno-stack-protector -mno-sse -mno-mmx \
+		-Iinclude -Wall -Wextra -fsyntax-only $(C_SRCS)
 
 $(BUILD_DIR)/%.o: %.s
 	@mkdir -p $(@D)
